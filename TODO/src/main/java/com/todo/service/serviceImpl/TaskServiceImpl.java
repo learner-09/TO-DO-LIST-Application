@@ -28,7 +28,7 @@ public class TaskServiceImpl implements TaskService {
 	public CustomResponse deleteTask(Integer id) {
 		LOGGER.info("start::deleteTask");
 		CustomResponse customResponse = null;
-		if (taskRepository.deleteByIdAndCreatedBy(id, JwtUser.getCurrentUser().getId())) {
+		if (taskRepository.deleteByTaskIdAndCreatedBy(id, JwtUser.getCurrentUser().getId())) {
 			customResponse = new CustomResponse("Task deleted successfully", true, ResponseStatus.SUCCESS.getCode());
 		} else {
 			customResponse = new CustomResponse("Unable to delete task", false, ResponseStatus.FAILURE.getCode());
