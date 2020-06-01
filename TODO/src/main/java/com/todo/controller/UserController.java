@@ -1,5 +1,7 @@
 package com.todo.controller;
 
+import com.todo.model.User;
+import com.todo.service.SignUpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,9 @@ public class UserController {
 	@Autowired
 	UserService userService;
 
+	@Autowired
+	SignUpService signUpService;
+
 	@GetMapping("/test/{value}")
 	ResponseEntity<CustomResponse> testApp(@PathVariable String value) {
 		LOGGER.info("start");
@@ -42,5 +47,16 @@ public class UserController {
 
 		LOGGER.info("end::loginUser");
 		return new ResponseEntity<>(customResponse, HttpStatus.OK);
+	}
+
+	@PostMapping(value="/signup",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+	ResponseEntity<CustomResponse> SignupUser(@RequestBody User user){
+
+		LOGGER.info("Signup::Started");
+
+		CustomResponse customResponse=signUpService.SignupUser(user);
+
+		LOGGER.info("Signup::Finished");
+		return new ResponseEntity<>(customResponse,HttpStatus.OK);
 	}
 }
