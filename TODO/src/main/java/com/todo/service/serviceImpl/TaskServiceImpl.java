@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.todo.constants.EnumConstants.ResponseStatus;
 import com.todo.jwt.JwtUser;
 import com.todo.model.CustomResponse;
+import com.todo.model.Task;
 import com.todo.repository.TaskRepository;
 import com.todo.service.TaskService;
 
@@ -28,7 +29,7 @@ public class TaskServiceImpl implements TaskService {
 	public CustomResponse deleteTask(Integer id) {
 		LOGGER.info("start::deleteTask");
 		CustomResponse customResponse = null;
-		if (taskRepository.deleteByIdAndCreatedBy(id, JwtUser.getCurrentUser().getId())) {
+		if (taskRepository.deleteByTaskIdAndUserId(id, JwtUser.getCurrentUser().getId())) {
 			customResponse = new CustomResponse("Task deleted successfully", true, ResponseStatus.SUCCESS.getCode());
 		} else {
 			customResponse = new CustomResponse("Unable to delete task", false, ResponseStatus.FAILURE.getCode());
