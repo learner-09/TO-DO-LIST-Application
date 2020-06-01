@@ -49,7 +49,7 @@ public class UserController {
 		return new ResponseEntity<>(customResponse, HttpStatus.OK);
 	}
 
-	@PostMapping(value="/signup",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value="/sign-up",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
 	ResponseEntity<CustomResponse> SignupUser(@RequestBody User user){
 
 		LOGGER.info("Signup::Started");

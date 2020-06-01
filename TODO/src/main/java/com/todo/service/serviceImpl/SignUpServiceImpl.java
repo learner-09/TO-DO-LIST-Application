@@ -9,7 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 
+@Service
 public class SignUpServiceImpl implements SignUpService {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(SignUpService.class);
@@ -19,9 +21,9 @@ public class SignUpServiceImpl implements SignUpService {
 
     @Override
     public CustomResponse SignupUser(User user) {
-        LOGGER.info("Inside::SignupUser");
+        LOGGER.info("Inside::SignupUser"+user);
 
-        if (user!=null){
+        if (user==null){
             LOGGER.info("User is null and Returning Failed from Signup");
 
             return new CustomResponse("Failed Signed-Up",null, ResponseStatus.FAILURE.getCode());

@@ -16,8 +16,6 @@ public class User {
 	private String name;
 	@Column(unique = true)
 	private String userName;
-
-	@JsonIgnore
 	private String password;
 	@Column(unique = true)
 	private String email;
@@ -96,4 +94,17 @@ public class User {
 		this.createdMode = createdMode;
 	}
 
+	@Override
+	public String toString() {
+		return "User{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", userName='" + userName + '\'' +
+				", password='" + password + '\'' +
+				", email='" + email + '\'' +
+				", contact='" + contact + '\'' +
+				", createdDate='" + createdDate + '\'' +
+				", createdMode='" + createdMode + '\'' +
+				'}';
+	}
 }
