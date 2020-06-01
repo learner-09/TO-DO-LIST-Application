@@ -28,8 +28,8 @@ public class Task {
 	private Double locationLat;
 	private Double locationLong;
 
-	@OneToOne
-	@JoinColumn(name = "user_id")
+	@ManyToOne
+	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	private User user;
 
 	public int getTaskId() {
