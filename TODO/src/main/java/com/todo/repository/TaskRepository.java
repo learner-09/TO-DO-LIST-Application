@@ -1,14 +1,25 @@
 package com.todo.repository;
 
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.todo.model.Task;
 
-@org.springframework.stereotype.Repository
+import java.util.List;
+
 public interface TaskRepository extends JpaRepository<Task, Integer> {
 
 	Boolean deleteByTaskIdAndUserId(Integer taskId, Integer userId);
 
 	@Override
-	<S extends Task> S save(S s);
+	Task save(Task task);//will work for task add and task update
+
+	@Override
+	Page<Task> findAll(Pageable pageable);//help:-https://howtodoinjava.com/spring-boot2/pagination-sorting-example/
+
+	@Override
+	List<Task> findAll(Sort sort);
 }
