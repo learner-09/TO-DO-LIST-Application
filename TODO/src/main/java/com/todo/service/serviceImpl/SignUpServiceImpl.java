@@ -8,16 +8,33 @@ import com.todo.service.SignUpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 
+@Service
 public class SignUpServiceImpl implements SignUpService {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(SignUpService.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(SignUpService.class);
 
     @Autowired
     UserRepository userRepository;
+
     @Override
     public CustomResponse SignupUser(User user) {
-        LOGGER.info("Inside::SignupUser");
+        LOGGER.info("Inside::SignupUser"+user);
+
+        if (user==null){
+            LOGGER.info("User is null and Returning Failed from Signup");
+
+            return new CustomResponse("Failed Signed-Up",null, ResponseStatus.FAILURE.getCode());
+        }
+
+        LOGGER.info("Encrypting password started");
+
+        String rawPassword=user.getPassword();
+        user.setPassword(passwordEncoder(rawPassword));
+
+        LOGGER.info("Encrypting password done");
 
         User returnedUser=userRepository.save(user);
         LOGGER.info("After executing save method");
@@ -32,5 +49,10 @@ public class SignUpServiceImpl implements SignUpService {
 
             return new CustomResponse("Failed Signed-Up",null, ResponseStatus.FAILURE.getCode());
         }
+    }
+
+    public static String passwordEncoder(String password){
+        LOGGER.info("Inside::passwordEncoder");
+        return new BCryptPasswordEncoder().encode(password);
     }
 }

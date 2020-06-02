@@ -5,6 +5,7 @@ import javax.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.todo.constants.EnumConstants.ResponseStatus;
@@ -36,6 +37,28 @@ public class TaskServiceImpl implements TaskService {
 		}
 		LOGGER.info("end::deleteTask");
 		return customResponse;
+	}
+
+	@Override
+	public CustomResponse addTask(Task task) {
+		LOGGER.info("Started::Add-Task");
+
+		if(task==null){
+			LOGGER.info("Task is null");
+			return new CustomResponse("Task Can't added",false,ResponseStatus.FAILURE.getCode());
+		}
+		LOGGER.info("Task is getting added");
+		Task returnedTask=taskRepository.save(task);
+		if (taskRepository.findById(task.getTaskId()).isPresent()){
+			return new CustomResponse("Task Added SuccessFully",true,ResponseStatus.SUCCESS.getCode());
+		}else {
+			return new CustomResponse("Task Addition Failed",false,ResponseStatus.FAILURE.getCode());
+		}
+	}
+
+	@Override
+	public CustomResponse fetchTaskByUsera() {
+		return null;
 	}
 
 //	private Boolean deleteTaskbyId(Integer id) {
