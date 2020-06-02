@@ -3,6 +3,7 @@ package com.todo.model;
 import java.sql.Date;
 
 import javax.persistence.*;
+import org.hibernate.annotations.Cascade.*;
 
 @Entity
 public class Task {
@@ -28,7 +29,7 @@ public class Task {
 	private Double locationLat;
 	private Double locationLong;
 
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)//issue
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	private User user;
 

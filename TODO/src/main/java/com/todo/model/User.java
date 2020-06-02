@@ -1,12 +1,7 @@
 package com.todo.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class User {
@@ -25,6 +20,10 @@ public class User {
 
 	@Column(name = "created_mode")
 	private String createdMode;
+//
+//	@Column(name = "tasks")
+//	@OneToMany
+//	private List<Task> taskList;
 
 	public User() {
 
