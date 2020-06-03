@@ -42,4 +42,13 @@ public class TaskController {
 		return new ResponseEntity<>(customResponse,HttpStatus.OK);
 	}
 
+	@PostMapping(value = "/update-task",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+	ResponseEntity<CustomResponse> updateTask(@RequestBody Task task) {
+		LOGGER.info("Start::Add-Task");
+
+		CustomResponse customResponse=taskService.addTask(task);
+
+		LOGGER.info("Finished::Add-Task");
+		return new ResponseEntity<>(customResponse,HttpStatus.OK);
+	}
 }

@@ -4,6 +4,7 @@ import java.sql.Date;
 
 import javax.persistence.*;
 import org.hibernate.annotations.Cascade.*;
+import org.springframework.lang.NonNull;
 
 @Entity
 public class Task {
@@ -29,8 +30,8 @@ public class Task {
 	private Double locationLat;
 	private Double locationLong;
 
-	@ManyToOne(cascade = CascadeType.ALL)//issue
-	@JoinColumn(name = "user_id", referencedColumnName = "id")
+	@ManyToOne(cascade = CascadeType.DETACH)
+	@JoinColumn(name = "user_id", referencedColumnName = "id",nullable = false)
 	private User user;
 
 	public int getTaskId() {

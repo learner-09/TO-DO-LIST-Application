@@ -26,4 +26,7 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
 
 	@Override
 	Optional<Task> findById(Integer integer);
+
+	@Override
+	boolean existsById(Integer integer);
 }

@@ -8,4 +8,5 @@ public interface TaskService {
 	CustomResponse deleteTask(Integer id);
 	CustomResponse addTask(Task task);
 	CustomResponse fetchTaskByUsera();
+	CustomResponse updateTask(Task task);
 }
