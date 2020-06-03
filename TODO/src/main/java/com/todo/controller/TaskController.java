@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import com.todo.dto.SearchTaskDTO;
 import com.todo.model.CustomResponse;
 import com.todo.service.TaskService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,14 +33,24 @@ public class TaskController {
 		return new ResponseEntity<>(customResponse, HttpStatus.OK);
 	}
 
-	@PostMapping(value = "/add-task",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/add-task", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	ResponseEntity<CustomResponse> addTask(@RequestBody Task task) {
 		LOGGER.info("Start::Add-Task");
 
-		CustomResponse customResponse=taskService.addTask(task);
+		CustomResponse customResponse = taskService.addTask(task);
 
 		LOGGER.info("Finished::Add-Task");
-		return new ResponseEntity<>(customResponse,HttpStatus.OK);
+		return new ResponseEntity<>(customResponse, HttpStatus.OK);
+	}
+
+	@PostMapping(value = "/search-task", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	ResponseEntity<CustomResponse> searchTask(@RequestBody SearchTaskDTO searchTaskDTO) {
+		LOGGER.info("Start::Search-Task");
+
+		CustomResponse customResponse = taskService.searchTask(searchTaskDTO);
+
+		LOGGER.info("Finished::Search-Task");
+		return new ResponseEntity<>(customResponse, HttpStatus.OK);
 	}
 
 	@PostMapping(value = "/update-task",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)

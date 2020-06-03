@@ -2,9 +2,14 @@ package com.todo.model;
 
 import java.sql.Date;
 
-import javax.persistence.*;
-import org.hibernate.annotations.Cascade.*;
-import org.springframework.lang.NonNull;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Task {
@@ -20,7 +25,7 @@ public class Task {
 	private Date updatedDate;
 	private Date startDate;
 	private Date endDate;
-	private int status;
+	private Short status;
 	private String colorCode;
 	private Boolean notifyOptContact;
 	private Boolean notifyOptEmail;
@@ -31,7 +36,7 @@ public class Task {
 	private Double locationLong;
 
 	@ManyToOne(cascade = CascadeType.DETACH)
-	@JoinColumn(name = "user_id", referencedColumnName = "id",nullable = false)
+	@JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
 	private User user;
 
 	public int getTaskId() {
@@ -90,11 +95,11 @@ public class Task {
 		this.endDate = endDate;
 	}
 
-	public int getStatus() {
+	public Short getStatus() {
 		return status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(Short status) {
 		this.status = status;
 	}
 
