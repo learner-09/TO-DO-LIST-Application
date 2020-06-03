@@ -35,7 +35,7 @@ public class Task {
 	private Double locationLat;
 	private Double locationLong;
 
-	@ManyToOne(cascade = CascadeType.DETACH) // issue
+	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
 	private User user;
 
@@ -95,7 +95,7 @@ public class Task {
 		this.endDate = endDate;
 	}
 
-	public int getStatus() {
+	public Short getStatus() {
 		return status;
 	}
 

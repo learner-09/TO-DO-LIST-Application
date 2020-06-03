@@ -1,6 +1,7 @@
 package com.todo.model;
 
 import javax.persistence.*;
+import java.util.List;
 
 
 @Entity
@@ -20,10 +21,11 @@ public class User {
 
 	@Column(name = "created_mode")
 	private String createdMode;
-//
-//	@Column(name = "tasks")
-//	@OneToMany
-//	private List<Task> taskList;
+/*
+	@Column(name = "tasks")
+	@JoinColumn(name = "User",referencedColumnName = "taskId")
+	@OneToMany
+	private List<Task> taskList;*/
 
 	public User() {
 
