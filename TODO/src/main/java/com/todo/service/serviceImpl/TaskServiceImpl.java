@@ -47,8 +47,11 @@ public class TaskServiceImpl implements TaskService {
 			LOGGER.info("Task is null");
 			return new CustomResponse("Task Can't added",false,ResponseStatus.FAILURE.getCode());
 		}
-		LOGGER.info("Task::"+task);
-		//task.getUser().setId(JwtUser.getCurrentUser().getId());
+
+		if(task.getUser().getId()!=JwtUser.getCurrentUser().getId()){
+			LOGGER.info("Task can't be created::User id MisMatch");
+			return new CustomResponse("Task can't be created::User id MisMatch",false,ResponseStatus.FAILURE.getCode());
+		}
 		LOGGER.info("Task is getting added");
 		Task returnedTask=taskRepository.save(task);
 		if (taskRepository.findById(task.getTaskId()).isPresent()){
@@ -60,7 +63,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public CustomResponse updateTask(Task task) {
-        LOGGER.info("Update Task::Started");
+        LOGGER.info("Update Task::Started"+task);
 
         if(task==null){
             LOGGER.info("Invalid Table");
@@ -69,7 +72,8 @@ public class TaskServiceImpl implements TaskService {
 
         int userId=taskRepository.findById(task.getTaskId()).get().getUser().getId();
 
-        if(task.getUser().getId()==JwtUser.getCurrentUser().getId() && task.getUser().getId()==userId){
+        LOGGER.info(task.getUser().getId()+" "+JwtUser.getCurrentUser().getId()+" "+userId+"");
+        if(!(task.getUser().getId()==JwtUser.getCurrentUser().getId() && task.getUser().getId()==userId)){
             LOGGER.info("User is not authorised to update task");
             return new CustomResponse("User is not authorised to update task",false,ResponseStatus.FAILURE.getCode());
         }
@@ -78,18 +82,20 @@ public class TaskServiceImpl implements TaskService {
         if(taskRepository.findById(task.getTaskId()).isPresent()){
             LOGGER.info("Task can't be updated , there is not such task");
             Task taskToUpdate=taskRepository.findById(task.getTaskId()).get();
+            taskToUpdate.setTitle(task.getTitle());
+            taskToUpdate.setDescription(task.getDescription());
             taskToUpdate.setStartDate(task.getStartDate());
             taskToUpdate.setEndDate(task.getEndDate());
             taskToUpdate.setStatus(task.getStatus());
+            taskToUpdate.setUpdatedDate(task.getUpdatedDate());
             Task updatedTask=taskRepository.save(taskToUpdate);
-            if(updatedTask.equals(task)){flagCheck=true;}
-            LOGGER.info("Task update starting");
+            if(updatedTask.equals(task)){flagCheck=true;LOGGER.info("Task Updated Successfully");}
         }else{
             LOGGER.info("Task can't be updated , there is not such task");
             return new CustomResponse("Task can't be updated , there is not such task",false,ResponseStatus.FAILURE.getCode());
         }
         LOGGER.info("Update Task::Ended");
-	    return flagCheck?new CustomResponse("Task updated",true,ResponseStatus.FAILURE.getCode()):new CustomResponse("Task can't be updated",false,ResponseStatus.FAILURE.getCode());
+	    return flagCheck?new CustomResponse("Task updated",true,ResponseStatus.SUCCESS.getCode()):new CustomResponse("Task can't be updated",false,ResponseStatus.FAILURE.getCode());
     }
 
     @Override
@@ -104,3 +110,30 @@ public class TaskServiceImpl implements TaskService {
 //	}
 
 }
+/*{
+	"title":"1st task for userid 67",
+	"description":"first task and its get updated++++++++++++======+++++++++++++++++++++++++++++=======================",
+	"createdDate":"2015-03-31",
+	"updatedDate":"2015-03-31",
+	"startDate":"2015-03-31",
+	"endDate":"2015-03-31",
+	"status":"1",
+	"colorCode":"red",
+	"notifyOptContact":"true",
+	"notifyOptEmail":"false",
+	"notifyOptWeb":"false",
+	"urlToImage":"dd",
+	"location":"lko",
+	"locationLat":"333.333",
+	"locationLong":"233.33",
+	"user":{
+		"id":67
+	}
+}
+   { "name":"abhishek",
+    "userName":"abhishek",
+    "password":"password",
+    "email": "aa@a.com",
+    "contact": 7379012345,
+    "createdDate": "1-06-2020",
+    "createdMode": "manual"}*/

@@ -3,12 +3,10 @@ package com.todo.model;
 import java.sql.Date;
 
 import javax.persistence.*;
-import org.hibernate.annotations.Cascade.*;
-import org.springframework.lang.NonNull;
+
 
 @Entity
 public class Task {
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int taskId;
@@ -168,6 +166,14 @@ public class Task {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+    @Override
+	public boolean equals(Object obj) {
+		Task task=(Task) obj;
+		return this.getTaskId()==task.getTaskId() && this.getTitle().equals(task.getTitle()) && this.getDescription().equals(task.getDescription()) && this.getStartDate().equals(task.getStartDate())
+				&& this.getStatus()==task.getStatus()
+				&& this.getUpdatedDate().equals(task.getUpdatedDate());
 	}
 
 	@Override
