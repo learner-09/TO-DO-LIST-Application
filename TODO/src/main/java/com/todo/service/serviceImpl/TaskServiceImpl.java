@@ -9,6 +9,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import com.todo.dto.TaskDto;
+import com.todo.model.TaskTagMapping;
+import com.todo.service.TaskTagMappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,9 @@ public class TaskServiceImpl implements TaskService {
 
     @Autowired
     TaskRepository taskRepository;
+
+    @Autowired
+    TaskTagMappingService taskTagMappingService;
 
     @Override
     public CustomResponse deleteTask(Integer id) {
@@ -108,24 +114,49 @@ public class TaskServiceImpl implements TaskService {
 //		return isSuccessful > 0 ? true : false;
 //	}
 
-    @Override
-    public CustomResponse addTask(Task task) {
+    public boolean addTaskUtil(Task task) {
         LOGGER.info("Started::Add-Task");
-
+        boolean flag=false;
         if (task == null) {
             LOGGER.info("Task is null");
-            return new CustomResponse("Task Can't added", false, ResponseStatus.FAILURE.getCode());
+            return flag;
         }
-
         if (task.getUser().getId() != JwtUser.getCurrentUser().getId()) {
             LOGGER.info("Task can't be created::User id MisMatch");
-            return new CustomResponse("Task can't be created::User id MisMatch", false, ResponseStatus.FAILURE.getCode());
+            return flag;
         }
         LOGGER.info("Task is getting added");
         Task returnedTask = taskRepository.save(task);
         if (taskRepository.findById(task.getTaskId()).isPresent()) {
-            return new CustomResponse("Task Added SuccessFully", true, ResponseStatus.SUCCESS.getCode());
+            flag=true;
+            return flag;
         } else {
+            return flag;
+        }
+    }
+
+    @Override
+    public CustomResponse addTask(TaskDto taskDto) {
+        LOGGER.info("addTask-Dto::Started");
+        Task task=null;
+        List<TaskTagMapping> taskTagMappings=null;
+        if(taskDto==null){
+            return new CustomResponse("TaskDto is null", false, ResponseStatus.FAILURE.getCode());
+        }
+        if (taskDto.getUser().getId() != JwtUser.getCurrentUser().getId()) {
+            LOGGER.info("Task can't be created::User id MisMatch");
+            return new CustomResponse("Task can't be created::User id MisMatch", false, ResponseStatus.FAILURE.getCode());
+        }
+        task=new Task(taskDto.getTitle(),taskDto.getDescription(),taskDto.getCreatedDate(),taskDto.getUpdatedDate(),taskDto.getStartDate(),taskDto.getEndDate(),taskDto.getStatus(),taskDto.getColorCode(),
+                taskDto.getNotifyOptContact(),taskDto.getNotifyOptEmail(),taskDto.getNotifyOptWeb(),
+                taskDto.getUrlToImage(),taskDto.getLocation(),taskDto.getLocationLat(),taskDto.getLocationLong(),taskDto.getUser());
+        boolean response_task=addTaskUtil(task);
+        taskTagMappings=taskDto.getTagMappingList();
+        boolean response_tags=taskTagMappingService.addTags(taskTagMappings);
+        if(response_task && response_tags){
+            return new CustomResponse("Task Added SuccessFully", true, ResponseStatus.SUCCESS.getCode());
+        }
+        else{
             return new CustomResponse("Task Addition Failed", false, ResponseStatus.FAILURE.getCode());
         }
     }
@@ -170,6 +201,7 @@ public class TaskServiceImpl implements TaskService {
         return flagCheck ? new CustomResponse("Task updated", true, ResponseStatus.SUCCESS.getCode()) : new CustomResponse("Task can't be updated", false, ResponseStatus.FAILURE.getCode());
     }
 
+    public void updateTaskUtil(){}
 
 }
 /*{

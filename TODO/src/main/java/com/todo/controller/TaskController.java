@@ -1,5 +1,6 @@
 package com.todo.controller;
 
+import com.todo.dto.TaskDto;
 import com.todo.exceptions.TaskNotFound;
 import com.todo.model.Task;
 import org.slf4j.Logger;
@@ -35,10 +36,10 @@ public class TaskController {
 	}
 
 	@PostMapping(value = "/add-task", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	ResponseEntity<CustomResponse> addTask(@RequestBody Task task) {
+	ResponseEntity<CustomResponse> addTask(@RequestBody TaskDto taskDto) {
 		LOGGER.info("Start::Add-Task");
 
-		CustomResponse customResponse = taskService.addTask(task);
+		CustomResponse customResponse = taskService.addTask(taskDto);
 
 		LOGGER.info("Finished::Add-Task");
 		return new ResponseEntity<>(customResponse, HttpStatus.OK);
