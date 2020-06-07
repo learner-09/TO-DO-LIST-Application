@@ -16,4 +16,6 @@ public interface TaskService {
 	CustomResponse searchTask(SearchTaskDTO searchTaskDTO);
 
 	CustomResponse updateTask(Task task);
+
+	CustomResponse initTask();
 }

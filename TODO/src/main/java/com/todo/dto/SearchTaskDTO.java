@@ -10,6 +10,17 @@ public class SearchTaskDTO {
 	private Date toEndDate;
 	private Short status;
 	private String colorCode;
+	private String orderBy;
+	private String sortType;
+	private Integer tagId;
+
+	public Integer getTagId() {
+		return tagId;
+	}
+
+	public void setTagId(Integer tagId) {
+		this.tagId = tagId;
+	}
 
 	public Integer getTaskId() {
 		return taskId;
@@ -59,12 +70,30 @@ public class SearchTaskDTO {
 		this.colorCode = colorCode;
 	}
 
+	public String getOrderBy() {
+		return orderBy;
+	}
+
+	public void setOrderBy(String orderBy) {
+		this.orderBy = orderBy;
+	}
+
+	public String getSortType() {
+		return sortType;
+	}
+
+	public void setSortType(String sortType) {
+		this.sortType = sortType;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("SearchTaskDTO [taskId=").append(taskId).append(", title=").append(title)
 				.append(", fromEndDate=").append(fromEndDate).append(", toEndDate=").append(toEndDate)
-				.append(", status=").append(status).append(", colorCode=").append(colorCode).append("]");
+				.append(", status=").append(status).append(", colorCode=").append(colorCode).append(", orderBy=")
+				.append(orderBy).append(", sortType=").append(sortType).append(", tagId=").append(tagId).append("]");
 		return builder.toString();
 	}
+
 }
