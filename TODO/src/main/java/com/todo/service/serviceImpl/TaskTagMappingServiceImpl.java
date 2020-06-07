@@ -1,5 +1,7 @@
 package com.todo.service.serviceImpl;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.todo.dto.TaskTagDto;
 import com.todo.model.TaskTagMapping;
 import com.todo.repository.TaskTagMappingRepository;
 import com.todo.service.TaskTagMappingService;
@@ -15,8 +17,9 @@ public class TaskTagMappingServiceImpl implements TaskTagMappingService {
     TaskTagMappingRepository taskTagMappingRepository;
 
     @Override
-    public boolean addTags(List<TaskTagMapping> taskTagMappings) {
-        List<TaskTagMapping> list=taskTagMappingRepository.saveAll(taskTagMappings);
+    public boolean addTags(TaskTagDto taskTag) {
+       // TaskTagMapping taskTagMappings=new TaskTagMapping(taskTag.getTaskId(),taskTag.getTagId());
+        //TaskTagMapping list=taskTagMappingRepository.save(taskTagMappings);
         return true;
     }
 }

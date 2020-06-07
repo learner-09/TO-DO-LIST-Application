@@ -2,15 +2,17 @@ package com.todo.service.serviceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
 import com.todo.dto.TaskDto;
+import com.todo.dto.TaskTagDto;
 import com.todo.model.TaskTagMapping;
+import com.todo.repository.TaskTagMappingRepository;
 import com.todo.service.TaskTagMappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +37,9 @@ public class TaskServiceImpl implements TaskService {
 
     @Autowired
     TaskRepository taskRepository;
+
+    @Autowired
+    TaskTagMappingRepository taskTagMappingRepository;
 
     @Autowired
     TaskTagMappingService taskTagMappingService;
@@ -108,38 +113,32 @@ public class TaskServiceImpl implements TaskService {
 
     }
 
-//	private Boolean deleteTaskbyId(Integer id) {
-//		int isSuccessful = entityManager.createQuery("delete from task t where t.task_id=:taskId and t.id=:userId")
-//				.setParameter("taskId", id).setParameter("userId", JwtUser.getCurrentUser().getId()).executeUpdate();
-//		return isSuccessful > 0 ? true : false;
-//	}
 
-    public boolean addTaskUtil(Task task) {
+    public CustomResponse addTaskUtil(Task task) {
         LOGGER.info("Started::Add-Task");
         boolean flag=false;
         if (task == null) {
             LOGGER.info("Task is null");
-            return flag;
+            return new CustomResponse("Task is null", false, ResponseStatus.FAILURE.getCode());
         }
         if (task.getUser().getId() != JwtUser.getCurrentUser().getId()) {
             LOGGER.info("Task can't be created::User id MisMatch");
-            return flag;
+            return new CustomResponse("Task can't be created::User id MisMatch", false, ResponseStatus.FAILURE.getCode());
         }
         LOGGER.info("Task is getting added");
         Task returnedTask = taskRepository.save(task);
         if (taskRepository.findById(task.getTaskId()).isPresent()) {
-            flag=true;
-            return flag;
+            return new CustomResponse("Task created successfully", returnedTask, ResponseStatus.SUCCESS.getCode());
         } else {
-            return flag;
+            return new CustomResponse("Task can't be created", "No Task", ResponseStatus.FAILURE.getCode());
         }
     }
 
     @Override
     public CustomResponse addTask(TaskDto taskDto) {
         LOGGER.info("addTask-Dto::Started");
-        Task task=null;
-        List<TaskTagMapping> taskTagMappings=null;
+        Task task;
+        List<TaskTagDto> taskTagMappings;
         if(taskDto==null){
             return new CustomResponse("TaskDto is null", false, ResponseStatus.FAILURE.getCode());
         }
@@ -150,10 +149,16 @@ public class TaskServiceImpl implements TaskService {
         task=new Task(taskDto.getTitle(),taskDto.getDescription(),taskDto.getCreatedDate(),taskDto.getUpdatedDate(),taskDto.getStartDate(),taskDto.getEndDate(),taskDto.getStatus(),taskDto.getColorCode(),
                 taskDto.getNotifyOptContact(),taskDto.getNotifyOptEmail(),taskDto.getNotifyOptWeb(),
                 taskDto.getUrlToImage(),taskDto.getLocation(),taskDto.getLocationLat(),taskDto.getLocationLong(),taskDto.getUser());
-        boolean response_task=addTaskUtil(task);
+        CustomResponse response_task=addTaskUtil(task);
+        Task taskNeeded=(Task) response_task.getResponse();
         taskTagMappings=taskDto.getTagMappingList();
-        boolean response_tags=taskTagMappingService.addTags(taskTagMappings);
-        if(response_task && response_tags){
+        LOGGER.info("DEBUG",taskTagMappings);
+        for (TaskTagDto taskTag:taskTagMappings)
+        {
+            String id= UUID.randomUUID().toString();
+           taskTagMappingRepository.save(new TaskTagMapping(id,taskNeeded.getTaskId(),taskTag.getTagId()));
+        }
+        if(task!=null){
             return new CustomResponse("Task Added SuccessFully", true, ResponseStatus.SUCCESS.getCode());
         }
         else{
@@ -204,30 +209,3 @@ public class TaskServiceImpl implements TaskService {
     public void updateTaskUtil(){}
 
 }
-/*{
-	"title":"1st task for userid 67",
-	"description":"first task and its get updated++++++++++++======+++++++++++++++++++++++++++++=======================",
-	"createdDate":"2015-03-31",
-	"updatedDate":"2015-03-31",
-	"startDate":"2015-03-31",
-	"endDate":"2015-03-31",
-	"status":"1",
-	"colorCode":"red",
-	"notifyOptContact":"true",
-	"notifyOptEmail":"false",
-	"notifyOptWeb":"false",
-	"urlToImage":"dd",
-	"location":"lko",
-	"locationLat":"333.333",
-	"locationLong":"233.33",
-	"user":{
-		"id":67
-	}
-}
-   { "name":"abhishek",
-    "userName":"abhishek",
-    "password":"password",
-    "email": "aa@a.com",
-    "contact": 7379012345,
-    "createdDate": "1-06-2020",
-    "createdMode": "manual"}*/

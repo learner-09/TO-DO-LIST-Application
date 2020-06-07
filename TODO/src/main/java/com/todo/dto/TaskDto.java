@@ -1,5 +1,6 @@
 package com.todo.dto;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.todo.model.TaskTagMapping;
 import com.todo.model.User;
 
@@ -29,7 +30,7 @@ public class TaskDto {
     private Double locationLat;
     private Double locationLong;
     private User user;
-    private List<TaskTagMapping> tagMappingList;
+    private List<TaskTagDto> tagMappingList;
 
     public TaskDto() {
     }
@@ -170,11 +171,11 @@ public class TaskDto {
         this.user = user;
     }
 
-    public List<TaskTagMapping> getTagMappingList() {
+    public List<TaskTagDto> getTagMappingList() {
         return tagMappingList;
     }
 
-    public void setTagMappingList(List<TaskTagMapping> tagMappingList) {
+    public void setTagMappingList(List<TaskTagDto> tagMappingList) {
         this.tagMappingList = tagMappingList;
     }
 }
