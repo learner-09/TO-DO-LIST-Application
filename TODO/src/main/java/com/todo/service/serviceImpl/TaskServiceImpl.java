@@ -1,7 +1,9 @@
 package com.todo.service.serviceImpl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -14,11 +16,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.todo.constants.EnumConstants.GeneralTypeId;
 import com.todo.constants.EnumConstants.ResponseStatus;
+import com.todo.constants.EnumConstants.SortType;
 import com.todo.dto.SearchTaskDTO;
 import com.todo.jwt.JwtUser;
 import com.todo.model.CustomResponse;
+import com.todo.model.GeneralMaster;
 import com.todo.model.Task;
+import com.todo.model.User;
+import com.todo.repository.GeneralMasterRepository;
 import com.todo.repository.TaskRepository;
 import com.todo.service.TaskService;
 
@@ -32,6 +39,9 @@ public class TaskServiceImpl implements TaskService {
 
 	@Autowired
 	TaskRepository taskRepository;
+
+	@Autowired
+	GeneralMasterRepository generalTypeMaster;
 
 	@Override
 	public CustomResponse deleteTask(Integer id) {
@@ -94,9 +104,21 @@ public class TaskServiceImpl implements TaskService {
 			predicates.add(qb.equal(task.get("taskId"), searchTaskDTO.getTaskId()));
 		}
 
-		predicates.add(qb.equal(task.get("userId"), JwtUser.getCurrentUser().getId()));
+		User user = new User();
+		user.setId(JwtUser.getCurrentUser().getId());
+		
+		predicates.add(qb.equal(task.get("user"), user));
 
 		cq.select(task).where(predicates.toArray(new Predicate[] {}));
+		if (searchTaskDTO.getOrderBy() != null
+				&& searchTaskDTO.getSortType().equalsIgnoreCase(SortType.ASCENDING.getCode())) {
+			cq.orderBy(qb.asc(task.get(searchTaskDTO.getOrderBy())));
+		} else if (searchTaskDTO.getOrderBy() != null
+				&& searchTaskDTO.getSortType().equalsIgnoreCase(SortType.DESCENDING.getCode())) {
+			cq.orderBy(qb.asc(task.get(searchTaskDTO.getOrderBy())));
+		} else if (searchTaskDTO.getOrderBy() == null) {
+			cq.orderBy(qb.asc(task.get("title")));
+		}
 
 		return entityManager.createQuery(cq).getResultList();
 	}
@@ -162,6 +184,25 @@ public class TaskServiceImpl implements TaskService {
 		LOGGER.info("Update Task::Ended");
 		return flagCheck ? new CustomResponse("Task updated", true, ResponseStatus.FAILURE.getCode())
 				: new CustomResponse("Task can't be updated", false, ResponseStatus.FAILURE.getCode());
+	}
+
+	@Override
+	public CustomResponse initTask() {
+		return new CustomResponse("Init Success", getGeneralData(), ResponseStatus.SUCCESS.getCode());
+	}
+
+	Map<String, List<GeneralMaster>> getGeneralData() {
+		Map<String, List<GeneralMaster>> response = new HashMap<String, List<GeneralMaster>>();
+		List<GeneralMaster> generalDataStatus = generalTypeMaster
+				.findAllByGeneralTypeId(GeneralTypeId.TASK_STATUS.getCode());
+		response.put("status", generalDataStatus);
+		List<GeneralMaster> generalDataTag = generalTypeMaster.findAllByGeneralTypeId(GeneralTypeId.TASK_TAG.getCode());
+		response.put("tag", generalDataTag);
+		List<GeneralMaster> generalDataColor = generalTypeMaster
+				.findAllByGeneralTypeId(GeneralTypeId.TASK_COL.getCode());
+		response.put("col", generalDataColor);
+
+		return response;
 	}
 
 }
