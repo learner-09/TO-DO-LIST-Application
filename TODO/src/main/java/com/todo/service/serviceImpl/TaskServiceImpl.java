@@ -4,13 +4,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
+import com.todo.dto.TaskDto;
+import com.todo.dto.TaskTagDto;
+import com.todo.model.TaskTagMapping;
+import com.todo.repository.TaskTagMappingRepository;
+import com.todo.service.TaskTagMappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +37,7 @@ import com.todo.service.TaskService;
 
 @Service
 public class TaskServiceImpl implements TaskService {
+
 
 	final private Logger LOGGER = LoggerFactory.getLogger(TaskServiceImpl.class);
 
@@ -190,7 +197,56 @@ public class TaskServiceImpl implements TaskService {
 	public CustomResponse initTask() {
 		return new CustomResponse("Init Success", getGeneralData(), ResponseStatus.SUCCESS.getCode());
 	}
-
+    public CustomResponse addTaskUtil(Task task) {
+        LOGGER.info("Started::Add-Task");
+        boolean flag=false;
+        if (task == null) {
+            LOGGER.info("Task is null");
+            return new CustomResponse("Task is null", false, ResponseStatus.FAILURE.getCode());
+        }
+        if (task.getUser().getId() != JwtUser.getCurrentUser().getId()) {
+            LOGGER.info("Task can't be created::User id MisMatch");
+            return new CustomResponse("Task can't be created::User id MisMatch", false, ResponseStatus.FAILURE.getCode());
+        }
+        LOGGER.info("Task is getting added");
+        Task returnedTask = taskRepository.save(task);
+        if (taskRepository.findById(task.getTaskId()).isPresent()) {
+            return new CustomResponse("Task created successfully", returnedTask, ResponseStatus.SUCCESS.getCode());
+        } else {
+            return new CustomResponse("Task can't be created", "No Task", ResponseStatus.FAILURE.getCode());
+        }
+    }
+   @Override
+    public CustomResponse addTask(TaskDto taskDto) {
+        LOGGER.info("addTask-Dto::Started");
+        Task task;
+        List<TaskTagDto> taskTagMappings;
+        if(taskDto==null){
+            return new CustomResponse("TaskDto is null", false, ResponseStatus.FAILURE.getCode());
+        }
+        if (taskDto.getUser().getId() != JwtUser.getCurrentUser().getId()) {
+            LOGGER.info("Task can't be created::User id MisMatch");
+            return new CustomResponse("Task can't be created::User id MisMatch", false, ResponseStatus.FAILURE.getCode());
+        }
+        task=new Task(taskDto.getTitle(),taskDto.getDescription(),taskDto.getCreatedDate(),taskDto.getUpdatedDate(),taskDto.getStartDate(),taskDto.getEndDate(),taskDto.getStatus(),taskDto.getColorCode(),
+                taskDto.getNotifyOptContact(),taskDto.getNotifyOptEmail(),taskDto.getNotifyOptWeb(),
+                taskDto.getUrlToImage(),taskDto.getLocation(),taskDto.getLocationLat(),taskDto.getLocationLong(),taskDto.getUser());
+        CustomResponse response_task=addTaskUtil(task);
+        Task taskNeeded=(Task) response_task.getResponse();
+        taskTagMappings=taskDto.getTagMappingList();
+        LOGGER.info("DEBUG",taskTagMappings);
+        for (TaskTagDto taskTag:taskTagMappings)
+        {
+            String id= UUID.randomUUID().toString();
+           taskTagMappingRepository.save(new TaskTagMapping(id,taskNeeded.getTaskId(),taskTag.getTagId()));
+        }
+        if(task!=null){
+            return new CustomResponse("Task Added SuccessFully", true, ResponseStatus.SUCCESS.getCode());
+        }
+        else{
+            return new CustomResponse("Task Addition Failed", false, ResponseStatus.FAILURE.getCode());
+        }
+    }
 	Map<String, List<GeneralMaster>> getGeneralData() {
 		Map<String, List<GeneralMaster>> response = new HashMap<String, List<GeneralMaster>>();
 		List<GeneralMaster> generalDataStatus = generalTypeMaster

@@ -1,21 +1,22 @@
-package com.todo.model;
+package com.todo.dto;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.todo.model.TaskTagMapping;
+import com.todo.model.User;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import java.sql.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
-import javax.persistence.*;
+public class TaskDto {
 
-@Entity
-public class Task {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private int taskId;
     private String title;
     private String description;
-    @Column(name = "created_date")
     private Date createdDate;
-    @Column(name = "updated_date")
     private Date updatedDate;
     private Date startDate;
     private Date endDate;
@@ -28,28 +29,10 @@ public class Task {
     private String location;
     private Double locationLat;
     private Double locationLong;
-
-    @ManyToOne(cascade = CascadeType.DETACH)
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
+    private List<TaskTagDto> tagMappingList;
 
-    public Task(String title, String description, Date createdDate, Date updatedDate, Date startDate, Date endDate, Short status, String colorCode, Boolean notifyOptContact, Boolean notifyOptEmail, Boolean notifyOptWeb, String urlToImage, String location, Double locationLat, Double locationLong,User user) {
-        this.title = title;
-        this.description = description;
-        this.createdDate = createdDate;
-        this.updatedDate = updatedDate;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.status = status;
-        this.colorCode = colorCode;
-        this.notifyOptContact = notifyOptContact;
-        this.notifyOptEmail = notifyOptEmail;
-        this.notifyOptWeb = notifyOptWeb;
-        this.urlToImage = urlToImage;
-        this.location = location;
-        this.locationLat = locationLat;
-        this.locationLong = locationLong;
-        this.user=user;
+    public TaskDto() {
     }
 
     public int getTaskId() {
@@ -188,26 +171,11 @@ public class Task {
         this.user = user;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        Task task = (Task) obj;
-        return this.getTaskId() == task.getTaskId() && this.getTitle().equals(task.getTitle()) && this.getDescription().equals(task.getDescription()) && this.getStartDate().equals(task.getStartDate())
-                && this.getStatus() == task.getStatus()
-                && this.getUpdatedDate().equals(task.getUpdatedDate());
+    public List<TaskTagDto> getTagMappingList() {
+        return tagMappingList;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Task [taskId=").append(taskId).append(", title=").append(title).append(", description=")
-                .append(description).append(", createdDate=").append(createdDate).append(", updatedDate=")
-                .append(updatedDate).append(", startDate=").append(startDate).append(", endDate=").append(endDate)
-                .append(", status=").append(status).append(", colorCode=").append(colorCode)
-                .append(", notifyOptContact=").append(notifyOptContact).append(", notifyOptEmail=")
-                .append(notifyOptEmail).append(", notifyOptWeb=").append(notifyOptWeb).append(", urlToImage=")
-                .append(urlToImage).append(", location=").append(location).append(", locationLat=").append(locationLat)
-                .append(", locationLong=").append(locationLong).append(", user=").append(user).append("]");
-        return builder.toString();
+    public void setTagMappingList(List<TaskTagDto> tagMappingList) {
+        this.tagMappingList = tagMappingList;
     }
-
 }
